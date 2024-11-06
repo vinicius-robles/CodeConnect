@@ -192,6 +192,8 @@ textarea {
 }
 
 .container-imagem {
+    display: flex;
+    justify-content: center;
     height: 368px;
     padding: 24px 16px;
     background-color: var(--secondary-color);
