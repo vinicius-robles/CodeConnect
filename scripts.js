@@ -3,7 +3,7 @@ const inputUpload = document.getElementById("imagem-upload");
 
 // Quando o usuário interage com o botão, ele captura o atributo do input do tipo 'file' 
 // que está escondido na interface.
-uploadBtn.addEventListener("click", () =>{
+uploadBtn.addEventListener("click", () => {
     inputUpload.click();
 })
 
@@ -11,16 +11,16 @@ uploadBtn.addEventListener("click", () =>{
 // um objeto contendo a URL e o nome do arquivo. Se for rejeitada, passa uma mensagem personalizada
 // indicando o nome do arquivo que causou o erro.
 function lerConteudoDoArquivo(arquivo) {
-   return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const leitor = new FileReader();
         leitor.onload = () => {
-            resolve({ url: leitor.result, nome: arquivo.name});
+            resolve({ url: leitor.result, nome: arquivo.name });
         }
         leitor.onerror = () => {
             reject(`Erro na leitura do arquivo ${arquivo}`);
         }
         leitor.readAsDataURL(arquivo);
-   })
+    })
 }
 
 // ao selecionar o arquivo, o input detecta essa mudança e aguarda a resolução da 
@@ -38,7 +38,7 @@ inputUpload.addEventListener('change', async (evento) => {
             const conteudoDoArquivo = await lerConteudoDoArquivo(arquivo);
             imagemPrincipal.src = conteudoDoArquivo.url;
             nomeDaImagem.textContent = conteudoDoArquivo.nome;
-        } catch(erro) {
+        } catch (erro) {
             console.error('Erro na leitura do arquivo');
         }
     }
@@ -49,15 +49,42 @@ inputUpload.addEventListener('change', async (evento) => {
 const inputTags = document.getElementById('input-tags');
 const listaTags = document.getElementById('lista-tags');
 
-inputTags.addEventListener('keypress', (evento) => {
-    if (evento.key === 'Enter') {
-        evento.preventDefault();
+listaTags.addEventListener('click', (evento) => {
+    if (evento.target.classList.contains('remove-tag')) {
+        const tagQueQueremosRemover = evento.target.parentElement;
+        listaTags.removeChild(tagQueQueremosRemover);
+    }
+})
+
+const tagsDisponiveis = ['Front-end', 'Back-end', 'Full-stack', 'HTML', 'CSS', 'JavaScript', 'Data Science', 'Programação'];
+
+async function verificaTagsDisponiveis(tagTexto) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(tagsDisponiveis.includes(tagTexto));
+        }, 1000);
+    })
+}
+
+inputTags.addEventListener('keypress', async (evento) => {
+    if (evento.key === 'Enter') { // define a tecla a ser detectada quando ocorrer o evento.
+        evento.preventDefault(); // previne o comportamento padrão da tecla 'enter'.
         const tagTexto = inputTags.value.trim(); // trim() é usado para eliminar os espaços antes e depois das palavras.
         if (tagTexto !== '') {
-            const tagNova = document.createElement('li');
-            tagNova.innerHTML = `<p>${tagTexto}</p> <img src="./img/close-black.svg" class="remove-tag">`;
-            listaTags.appendChild(tagNova);
-            inputTags.value = '';
+            try {
+                const tagExiste = await verificaTagsDisponiveis(tagTexto);
+                if (tagExiste) {
+                    const tagNova = document.createElement('li');
+                    tagNova.innerHTML = `<p>${tagTexto}</p> <img src="./img/close-black.svg" class="remove-tag">`;
+                    listaTags.appendChild(tagNova);
+                    inputTags.value = '';
+                } else {
+                    alert('Tag não foi encontrada.');
+                }
+            } catch (error) {
+                console.error('Erro ao verificar a existência da tag');
+                alert('Erro ao verificar a existência da tag. Verifique o console.');
+            }
         }
     }
 })
