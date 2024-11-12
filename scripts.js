@@ -72,7 +72,7 @@ inputTags.addEventListener('keypress', async (evento) => {
         const tagTexto = inputTags.value.trim(); // trim() é usado para eliminar os espaços antes e depois das palavras.
         if (tagTexto !== '') {
             try {
-                const tagExiste = await verificaTagsDisponiveis(tagTexto);
+                const tagExiste = await verificaTagsDisponiveis(tagTexto); // verifica se a tag existe dentro da lista ou não.
                 if (tagExiste) {
                     const tagNova = document.createElement('li');
                     tagNova.innerHTML = `<p>${tagTexto}</p> <img src="./img/close-black.svg" class="remove-tag">`;
@@ -86,5 +86,41 @@ inputTags.addEventListener('keypress', async (evento) => {
                 alert('Erro ao verificar a existência da tag. Verifique o console.');
             }
         }
+    }
+})
+
+const botaoPublicar = document.querySelector('.botao-publicar');
+
+// Simulação de entrega de formulário para uma API.
+
+async function publicarProjeto(nomeDoProjeto, descricaoDoProjeto, tagsProjeto) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const deuCerto = Math.random() > 0.5;
+
+            if (deuCerto) {
+                resolve('Projeto publicado com sucesso!');
+            } else {
+                reject('Erro ao publicar o projeto.');
+            }
+
+        }, 2000)
+    })
+}
+
+botaoPublicar.addEventListener('click', async (evento) => {
+    evento.preventDefault();
+
+    const nomeDoProjeto = document.getElementById('nome').value;
+    const descricaoDoProjeto = document.getElementById('descricao').value;
+    const tagsProjeto = Array.from(listaTags.querySelectorAll('P')).map(tag => tag.textContent);
+
+    try {
+        const resultado = await publicarProjeto(nomeDoProjeto, descricaoDoProjeto, tagsProjeto);
+        console.log(resultado);
+        alert('Deu tudo certo!');
+    } catch (error) {
+        console.log('Deu errado: ', error);
+        alert('Deu tudo errado! =(');
     }
 })
